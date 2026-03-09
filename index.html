@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digitalizace kanceláří — Paper-less Projekt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:      #0c0e11;
+  --surface: #13161a;
+  --border:  #1e2329;
+  --border2: #2a3040;
+  --text:    #e8eaf0;
+  --muted:   #5c6470;
+  --dim:     #8a919e;
+  --gold:    #c9a84c;
+  --gold-d:  #8a6e2e;
+  --green:   #3dba7e;
+  --green-d: #1a4a35;
+  --orange:  #e07340;
+  --orange-d:#4a2510;
+  --red:     #d94f3c;
+  --blue:    #4a8fd4;
+  --blue-d:  #1a2d45;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+/* ─── NOISE TEXTURE ─── */
+body::after {
+  content:'';
+  position:fixed; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:9999;
+}
+/* ─── LAYOUT ─── */
+.canvas {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 48px 100px;
+}
+/* ─── HERO / HEADER ─── */
+header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+/* subtle background grid */
+header::before {
+  content:'';
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity:.4;
+}
+.h-left {
+  padding: 80px 64px 80px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  z-index:1;
+  border-right: 1px solid var(--border);
+}
+.h-right {
+  padding: 80px 0 80px 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index:1;
+}
+.kicker {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 48px;
+}
+.kicker::before {
+  content:'';
+  display:block;
+  width: 40px; height: 1px;
+  background: var(--gold);
+}
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(54px, 5.5vw, 88px);
+  line-height: .93;
+  letter-spacing: -.03em;
+  color: #fff;
+  margin-bottom: 40px;
+}
+.hero-title span {
+  display: block;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--gold);
+  font-size: .72em;
+}
+.hero-lead {
+  font-size: 15px;
+  color: var(--dim);
+  line-height: 1.75;
+  max-width: 420px;
+  margin-bottom: 56px;
+}
+.hero-lead strong { color: var(--text); font-weight: 400; }
+.stats-row {
+  display: flex;
+  gap: 40px;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+}
+.stat {}
+.stat-n {
+  font-family: 'Playfair Display', serif;
+  font-size: 38px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+.stat-n em {
+  font-style: normal;
+  font-size: 18px;
+  color: var(--gold);
+  margin-left: 2px;
+}
+.stat-l {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 6px;
+}
+/* ─── PHASE LIST (right col in header) ─── */
+.phase-list { display: flex; flex-direction: column; gap:0; }
+.phase-item {
+  display: grid;
+  grid-template-columns: 36px 1fr 90px;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  opacity: 0;
+  transform: translateX(18px);
+  transition: opacity .45s, transform .45s;
+}
+.phase-item.in { opacity:1; transform:none; }
+.phase-item:first-child { padding-top:0; }
+.phase-item:last-child { border-bottom: none; }
+.phase-item:hover .p-name { color: var(--gold); }
+.p-n {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--gold);
+  font-weight: 500;
+}
+.p-name {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text);
+  transition: color .2s;
+}
+.p-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.p-dur {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  text-align: right;
+  letter-spacing: .04em;
+}
+/* ─── SECTION WRAPPER ─── */
+section {
+  padding: 88px 0;
+  border-bottom: 1px solid var(--border);
+}
+section:last-of-type { border-bottom: none; }
+.sec-head {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 60px;
+  align-items: start;
+  margin-bottom: 56px;
+}
+.sec-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding-top: 8px;
+  display: flex; align-items: center; gap:10px;
+}
+.sec-tag::before {
+  content:'';
+  width:28px; height:1px;
+  background: var(--gold);
+  display:block;
+}
+.sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(30px, 3vw, 44px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -.025em;
+  color: #fff;
+}
+.sec-title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--gold);
+}
+/* ─── WHY — 3 columns ─── */
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.why-card {
+  background: var(--surface);
+  padding: 40px 36px;
+  transition: background .2s;
+  opacity:0; transform:translateY(14px);
+  transition: opacity .45s, transform .45s, background .2s;
+}
+.why-card.in { opacity:1; transform:none; }
+.why-card:hover { background: #181c22; }
+.w-icon { font-size:30px; margin-bottom:24px; display:block; }
+.w-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+.w-body { font-size: 13.5px; color: var(--dim); line-height: 1.7; }
+/* ─── APPROACH ─── */
+.approach-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  margin-bottom: 64px;
+}
+.approach-body { font-size: 14.5px; color: var(--dim); line-height: 1.8; }
+.approach-body strong { color: var(--text); font-weight: 500; }
+.principles { display:flex; flex-direction:column; gap:0; }
+.princ {
+  display:grid;
+  grid-template-columns: 14px 1fr;
+  gap:16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  opacity:0; transform:translateX(-10px);
+  transition: opacity .4s, transform .4s;
+}
+.princ.in { opacity:1; transform:none; }
+.princ:last-child { border-bottom:none; }
+.princ-dot {
+  width:8px; height:8px; border-radius:50%;
+  background: var(--gold);
+  margin-top: 6px;
+}
+.princ-text { font-size: 13.5px; color: var(--dim); line-height:1.6; }
+.princ-text strong { color: var(--text); font-weight: 500; }
+/* ─── TIMELINE ─── */
+.timeline-wrap {
+  position: relative;
+  padding-top: 52px;
+}
+.tl-line {
+  position:absolute;
+  top: 14px; left: 18px; right: 18px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--blue) 100%);
+  opacity: .4;
+}
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+}
+.tl {
+  text-align:center;
+  position: relative;
+  z-index:1;
+  opacity:0; transform:translateY(10px);
+  transition: opacity .4s, transform .4s;
+}
+.tl.in { opacity:1; transform:none; }
+.tl:hover .tl-dot { background:var(--gold); border-color:var(--gold); }
+.tl:hover .tl-name { color: var(--gold); }
+.tl-dot {
+  width:28px; height:28px; border-radius:50%;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  margin: 0 auto 18px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px; color: var(--gold);
+  transition: background .2s, border-color .2s;
+}
+.tl.gate .tl-dot {
+  border-color: var(--gold);
+  background: rgba(201,168,76,.08);
+  width:32px; height:32px;
+  margin-top:-2px;
+}
+.tl-name {
+  font-size:11px; font-weight:500;
+  color: var(--text);
+  line-height:1.3; margin-bottom:4px;
+  transition: color .2s;
+}
+.tl-dur {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px; color: var(--muted);
+}
+/* ─── PILLARS ─── */
+.pillars {
+  display:grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap:1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.pillar {
+  background:var(--surface);
+  padding: 36px 24px;
+  text-align:center;
+  cursor:default;
+  opacity:0; transform:translateY(12px);
+  transition: opacity .4s, transform .4s, background .2s;
+}
+.pillar.in { opacity:1; transform:none; }
+.pillar:hover { background:#181c22; }
+.pillar:hover .pill-icon { transform: scale(1.15); }
+.pill-icon { font-size:28px; margin-bottom:16px; display:block; transition: transform .2s; }
+.pill-title {
+  font-family:'Playfair Display',serif;
+  font-size:13px; font-weight:700;
+  color:#fff; margin-bottom:8px; line-height:1.3;
+}
+.pill-body { font-size:12px; color:var(--muted); line-height:1.6; }
+/* ─── DOCS ─── */
+.docs {
+  display:grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap:16px;
+}
+.doc {
+  border:1px solid var(--border);
+  padding:28px 22px;
+  position:relative;
+  overflow:hidden;
+  opacity:0; transform:translateY(10px);
+  transition: opacity .4s, transform .4s, border-color .2s;
+}
+.doc.in { opacity:1; transform:none; }
+.doc:hover { border-color: var(--gold-d); }
+.doc::after {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background: var(--gold);
+  transform: scaleX(0); transform-origin:left;
+  transition: transform .25s;
+}
+.doc:hover::after { transform:scaleX(1); }
+.doc-n {
+  font-family:'Playfair Display',serif;
+  font-size:32px; font-weight:900;
+  color: var(--border2);
+  line-height:1; margin-bottom:16px;
+}
+.doc-title {
+  font-size:13px; font-weight:500;
+  color:#fff; margin-bottom:8px; line-height:1.35;
+}
+.doc-body { font-size:12px; color:var(--muted); line-height:1.6; }
+.badge {
+  display:inline-block;
+  margin-top:16px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px; letter-spacing:.08em;
+  padding:3px 8px; border-radius:2px; font-weight:500;
+}
+.b-done { background:var(--green-d); color:var(--green); }
+.b-draft { background:var(--orange-d); color:var(--orange); }
+/* ─── RISKS ─── */
+.risks {
+  display:grid;
+  grid-template-columns: repeat(3,1fr);
+  gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+}
+.risk {
+  background:var(--surface);
+  padding:36px 32px;
+  opacity:0; transform:translateY(10px);
+  transition: opacity .4s, transform .4s;
+}
+.risk.in { opacity:1; transform:none; }
+.risk-num {
+  font-family:'Playfair Display',serif;
+  font-size:52px; font-weight:900;
+  line-height:1; margin-bottom:6px;
+}
+.risk-num.h { color: var(--red); }
+.risk-num.m { color: var(--orange); }
+.risk-num.l { color: var(--green); }
+.risk-tag {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+  margin-bottom:24px;
+}
+.risk-tag.h { color:var(--red); }
+.risk-tag.m { color:var(--orange); }
+.risk-tag.l { color:var(--green); }
+.risk-items { list-style:none; }
+.risk-items li {
+  font-size:13px; color:var(--dim);
+  padding:9px 0; border-bottom:1px solid var(--border);
+  display:flex; gap:12px; align-items:start; line-height:1.5;
+}
+.risk-items li:last-child { border-bottom:none; }
+.risk-items li::before { content:'—'; color:var(--border2); flex-shrink:0; }
+/* ─── NEXT ─── */
+.next {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:64px;
+  align-items:start;
+}
+.steps { }
+.step {
+  display:grid;
+  grid-template-columns:52px 1fr;
+  gap:20px; padding:22px 0;
+  border-bottom:1px solid var(--border);
+  align-items:start;
+  opacity:0; transform:translateY(10px);
+  transition: opacity .4s, transform .4s;
+}
+.step.in { opacity:1; transform:none; }
+.step:last-child { border-bottom:none; }
+.step-n {
+  font-family:'Playfair Display',serif;
+  font-size:28px; font-weight:900;
+  color:var(--border2); line-height:1; margin-top:2px;
+}
+.step-title { font-size:15px; font-weight:500; color:#fff; margin-bottom:5px; }
+.step-body { font-size:13px; color:var(--dim); line-height:1.6; }
+.cta {
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:48px 44px;
+  position:relative;
+  overflow:hidden;
+}
+.cta::before {
+  content:'';
+  position:absolute; top:0; left:0; bottom:0; width:3px;
+  background: linear-gradient(180deg, var(--gold), transparent);
+}
+.cta-tag {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:20px;
+}
+.cta-title {
+  font-family:'Playfair Display',serif;
+  font-size:26px; font-weight:700;
+  line-height:1.15; letter-spacing:-.02em;
+  color:#fff; margin-bottom:16px;
+}
+.cta-title em { color:var(--gold); font-style:italic; }
+.cta-intro { font-size:13.5px; color:var(--dim); line-height:1.7; margin-bottom:28px; }
+.cta-qs { display:flex; flex-direction:column; gap:12px; }
+.cta-q {
+  display:flex; gap:14px;
+  font-size:13px; color:var(--dim); line-height:1.5;
+}
+.cta-q::before {
+  content:'?';
+  font-family:'Playfair Display',serif;
+  font-size:15px; font-weight:700;
+  color:var(--gold); flex-shrink:0; margin-top:0;
+}
+/* ─── FOOTER ─── */
+footer {
+  padding:44px 0 36px;
+  display:flex; justify-content:space-between; align-items:center;
+  border-top:1px solid var(--border);
+}
+.footer-brand {
+  font-family:'Playfair Display',serif;
+  font-size:15px; color:var(--dim);
+}
+.footer-meta {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px; color:var(--muted);
+  text-align:right; line-height:1.6;
+}
+/* ─── ANIMATE IN ─── */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:none; }
+}
+.h-left > * { animation: fadeUp .7s ease both; }
+.h-left > *:nth-child(1) { animation-delay:.1s; }
+.h-left > *:nth-child(2) { animation-delay:.25s; }
+.h-left > *:nth-child(3) { animation-delay:.4s; }
+.h-left > *:nth-child(4) { animation-delay:.55s; }
+@media (max-width:980px) {
+  header { grid-template-columns:1fr; min-height:auto; }
+  .h-left { border-right:none; border-bottom:1px solid var(--border); padding:60px 0; }
+  .h-right { padding:48px 0; }
+  .why-grid, .pillars, .docs { grid-template-columns:1fr 1fr; }
+  .risks, .approach-cols, .next { grid-template-columns:1fr; }
+  .timeline { grid-template-columns:repeat(4,1fr); }
+  .tl-line { display:none; }
+  .canvas { padding:0 24px 80px; }
+  .sec-head { grid-template-columns:1fr; gap:16px; }
+}
+@media print {
+  * { animation:none !important; opacity:1 !important; transform:none !important; }
+}
+</style>
+</head>
+<body>
+<div class="canvas">
+<!-- ═══ HEADER / HERO ═══ -->
+<header>
+  <div class="h-left">
+    <div>
+      <div class="kicker">Projektová koncepce · Úvodní brief</div>
+      <h1 class="hero-title">
+        Digita-<br>lizace<br>kanceláří
+        <span>Paper-less.</span>
+      </h1>
+      <p class="hero-lead">
+        Projekt přechodu od papírových dokumentů na plně digitální prostředí.
+        <strong>Výběr a implementace DMS, digitalizace archivů, redesign procesů</strong> a trvalá změna návyků — vše v jednom řízeném projektu s jasnými gate kritérii.
+      </p>
+    </div>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-n">8<em>fází</em></div>
+        <div class="stat-l">Projektový rámec</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">9–18<em>m</em></div>
+        <div class="stat-l">Orientační délka</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">80<em>%+</em></div>
+        <div class="stat-l">Cíl poklesu tisku</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">5</div>
+        <div class="stat-l">Klíč. dokumentů</div>
+      </div>
+    </div>
+  </div>
+  <div class="h-right">
+    <div class="phase-list">
+      <div class="phase-item"><span class="p-n">01</span><div><div class="p-name">Iniciace</div><div class="p-sub">Project Charter · Scope · Feasibility</div></div><span class="p-dur">2–3 t.</span></div>
+      <div class="phase-item"><span class="p-n">02</span><div><div class="p-name">Plánování</div><div class="p-sub">WBS · Risk Log · Komunikační plán</div></div><span class="p-dur">3–4 t.</span></div>
+      <div class="phase-item"><span class="p-n">03</span><div><div class="p-name">Analýza a design</div><div class="p-sub">Výběr DMS · Legislativa · As-is → To-be</div></div><span class="p-dur">6–10 t.</span></div>
+      <div class="phase-item"><span class="p-n">04</span><div><div class="p-name">Pilotní provoz</div><div class="p-sub">1 oddělení · Go/No-Go gate · Lessons</div></div><span class="p-dur">4–8 t.</span></div>
+      <div class="phase-item"><span class="p-n">05</span><div><div class="p-name">Implementace</div><div class="p-sub">Rollout do všech oddělení · Integrace</div></div><span class="p-dur">8–16 t.</span></div>
+      <div class="phase-item"><span class="p-n">06</span><div><div class="p-name">Digitalizace archivů</div><div class="p-sub">Skenování · OCR · Skartační plán</div></div><span class="p-dur">dle rozsahu</span></div>
+      <div class="phase-item"><span class="p-n">07</span><div><div class="p-name">Change management</div><div class="p-sub">Školení · Ambasadoři · Adopce</div></div><span class="p-dur">průběžně</span></div>
+      <div class="phase-item"><span class="p-n">08</span><div><div class="p-name">Uzavření projektu</div><div class="p-sub">KPI report · Lessons learned · Předání</div></div><span class="p-dur">2–3 t.</span></div>
+    </div>
+  </div>
+</header>
+<!-- ═══ WHY ═══ -->
+<section>
+  <div class="sec-head">
+    <div class="sec-tag">Proč to děláme</div>
+    <h2 class="sec-title">Tři problémy,<br><em>jeden projekt.</em></h2>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <span class="w-icon">📦</span>
+      <div class="w-title">Fyzické archivy plýtvají prostorem i časem</div>
+      <p class="w-body">Šanony, krabice, sklady. Nalezení dokumentu trvá minuty až hodiny. Fyzická archivace váže prostorové kapacity a neumožňuje sdílení v reálném čase.</p>
+    </div>
+    <div class="why-card">
+      <span class="w-icon">🖨️</span>
+      <div class="w-title">Tisk je zbytečný náklad i zdroj chyb</div>
+      <p class="w-body">Papírové kopie zastarávají okamžitě po tisku. Schvalovací procesy jsou pomalé — dokument fyzicky putuje mezi stolky, verzuje se tisk od tisku.</p>
+    </div>
+    <div class="why-card">
+      <span class="w-icon">🔒</span>
+      <div class="w-title">Compliance a GDPR vyžadují pořádek</div>
+      <p class="w-body">Legislativa na archivaci a ochranu dat se zpřísňuje. Digitální správa s auditní stopou a přístupovými právy je standardem moderní organizace.</p>
+    </div>
+  </div>
+</section>
+<!-- ═══ APPROACH ═══ -->
+<section>
+  <div class="sec-head">
+    <div class="sec-tag">Jak to pojmeme</div>
+    <h2 class="sec-title">Řízený postup,<br><em>ne skok do neznáma.</em></h2>
+  </div>
+  <div class="approach-cols">
+    <p class="approach-body">
+      Paper-less projekty selhávají na <strong>lidech, legislativě a podceněných archivech</strong> — ne na technologii. Proto volíme strukturovaný přístup: nejdříve analyzujeme skutečný stav, ověříme řešení na pilotu a teprve poté nasadíme v celé organizaci.<br><br>
+      Každá fáze má jasnou <strong>Definition of Done</strong> a Gate, přes který projekt nesmí projít bez splnění všech povinných kritérií. Projekt je ukončen až tehdy, když lze prokázat přínos čísly — proto měříme KPI baseline ještě před zahájením.
+    </p>
+    <div class="principles">
+      <div class="princ"><div class="princ-dot"></div><p class="princ-text"><strong>Pilot first.</strong> Jedno oddělení jako testovací terén — ověříme řešení dříve, než je nasadíme v celé firmě.</p></div>
+      <div class="princ"><div class="princ-dot"></div><p class="princ-text"><strong>Legislativa v popředí.</strong> Analýza toho, co lze a co nelze digitalizovat, proběhne před výběrem technologie.</p></div>
+      <div class="princ"><div class="princ-dot"></div><p class="princ-text"><strong>Change management od dne 1.</strong> Komunikace, ambasadoři a školení nezačínají u rolloutu — ale při iniciaci.</p></div>
+      <div class="princ"><div class="princ-dot"></div><p class="princ-text"><strong>Gate systém.</strong> GO/NO-GO rozhoduje sponzor na základě kritérií — ne harmonogram a ne tlak.</p></div>
+      <div class="princ"><div class="princ-dot"></div><p class="princ-text"><strong>Měřit přínosy.</strong> Baseline KPI změříme před projektem. Na konci bude jasné číslo, ne subjektivní dojem.</p></div>
+    </div>
+  </div>
+  <div class="timeline-wrap">
+    <div class="tl-line"></div>
+    <div class="timeline">
+      <div class="tl gate"><div class="tl-dot">1</div><div class="tl-name">Iniciace</div><div class="tl-dur">2–3 t.</div></div>
+      <div class="tl"><div class="tl-dot">2</div><div class="tl-name">Plánování</div><div class="tl-dur">3–4 t.</div></div>
+      <div class="tl"><div class="tl-dot">3</div><div class="tl-name">Analýza</div><div class="tl-dur">6–10 t.</div></div>
+      <div class="tl gate"><div class="tl-dot">4</div><div class="tl-name">Pilot</div><div class="tl-dur">4–8 t.</div></div>
+      <div class="tl"><div class="tl-dot">5</div><div class="tl-name">Implemen-tace</div><div class="tl-dur">8–16 t.</div></div>
+      <div class="tl"><div class="tl-dot">6</div><div class="tl-name">Archivy</div><div class="tl-dur">dle rozsahu</div></div>
+      <div class="tl"><div class="tl-dot">7</div><div class="tl-name">Change mgmt</div><div class="tl-dur">průběžně</div></div>
+      <div class="tl gate"><div class="tl-dot">8</div><div class="tl-name">Uzavření</div><div class="tl-dur">2–3 t.</div></div>
+    </div>
+  </div>
+</section>
+<!-- ═══ PILLARS ═══ -->
+<section>
+  <div class="sec-head">
+    <div class="sec-tag">Pět dimenzí úspěchu</div>
+    <h2 class="sec-title">O co se projekt <em>opírá.</em></h2>
+  </div>
+  <div class="pillars">
+    <div class="pillar"><span class="pill-icon">⚖️</span><div class="pill-title">Legislativní soulad</div><p class="pill-body">Co lze a co nelze digitalizovat. Elektronický podpis. GDPR. Skartační plán schválený právníkem.</p></div>
+    <div class="pillar"><span class="pill-icon">🗄️</span><div class="pill-title">Technologie (DMS)</div><p class="pill-body">Výběr ze 3+ platforem. Integrace s ERP. Cloud vs. on-premise. Přístupová práva a bezpečnost.</p></div>
+    <div class="pillar"><span class="pill-icon">🔄</span><div class="pill-title">Procesní redesign</div><p class="pill-body">Mapování as-is toků. Návrh to-be procesů. Schvalovací workflow. Archivační politika.</p></div>
+    <div class="pillar"><span class="pill-icon">🧑‍🤝‍🧑</span><div class="pill-title">Lidé a změna</div><p class="pill-body">Komunikační plán. Ambasadoři v odděleních. Školení dle rolí. Monitoring adopce.</p></div>
+    <div class="pillar"><span class="pill-icon">📊</span><div class="pill-title">Měření výsledků</div><p class="pill-body">KPI baseline před projektem. Pokles tisku, úspora prostoru, adopce DMS. ROI report.</p></div>
+  </div>
+</section>
+<!-- ═══ DOCS ═══ -->
+<section>
+  <div class="sec-head">
+    <div class="sec-tag">Projektová dokumentace</div>
+    <h2 class="sec-title">Co už je <em>připraveno.</em></h2>
+  </div>
+  <div class="docs">
+    <div class="doc"><div class="doc-n">01</div><div class="doc-title">Plán fází & workshop otázky</div><p class="doc-body">8 fází, 60+ otázek pro stakeholder workshopy, typická rizika každé fáze.</p><span class="badge b-done">Hotovo · .docx</span></div>
+    <div class="doc"><div class="doc-n">02</div><div class="doc-title">Feasibility studie</div><p class="doc-body">Šablona pro 5 dimenzí proveditelnosti: business case, legislativa, organizační připravenost.</p><span class="badge b-draft">Šablona · .docx</span></div>
+    <div class="doc"><div class="doc-n">03</div><div class="doc-title">Project Charter</div><p class="doc-body">Cíle, scope, stakeholdeři, budget, milníky, KPI, rizika, governance. Připraven k vyplnění.</p><span class="badge b-draft">Draft · .docx</span></div>
+    <div class="doc"><div class="doc-n">04</div><div class="doc-title">Definition of Done & Gate</div><p class="doc-body">Povinná kritéria dokončení a průchodová Gate kritéria pro každou z 8 fází.</p><span class="badge b-done">Hotovo · .docx</span></div>
+    <div class="doc"><div class="doc-n">05</div><div class="doc-title">Risk Log</div><p class="doc-body">13 rizik hodnocených P×D, response strategie, vlastníci, dashboard a legenda metodiky.</p><span class="badge b-done">Hotovo · .xlsx</span></div>
+  </div>
+</section>
+<!-- ═══ RISKS ═══ -->
+<section>
+  <div class="sec-head">
+    <div class="sec-tag">Kde to selhává</div>
+    <h2 class="sec-title">Na co si <em>dát pozor.</em></h2>
+  </div>
+  <div class="risks">
+    <div class="risk">
+      <div class="risk-num h">9</div>
+      <div class="risk-tag h">Skóre P×D · Kritické</div>
+      <ul class="risk-items">
+        <li>Odpor zaměstnanců — ignorování DMS, návrat k tisku</li>
+        <li>Nedostatečná podpora vedení v průběhu implementace</li>
+      </ul>
+    </div>
+    <div class="risk">
+      <div class="risk-num m">6</div>
+      <div class="risk-tag m">Skóre P×D · Vysoké</div>
+      <ul class="risk-items">
+        <li>Legislativní překvapení — dokumenty, jež nelze digitalizovat</li>
+        <li>Selhání integrace DMS s ERP nebo účetním systémem</li>
+        <li>Podcenění objemu fyzických archivů → přečerpání rozpočtu</li>
+        <li>Shadow IT — zaměstnanci ukládají dokumenty mimo DMS</li>
+      </ul>
+    </div>
+    <div class="risk">
+      <div class="risk-num l">3</div>
+      <div class="risk-tag l">Skóre P×D · Sledovat</div>
+      <ul class="risk-items">
+        <li>Odchod klíčového člena týmu nebo PM</li>
+        <li>Souběh s jinou velkou organizační změnou</li>
+        <li>Překročení celkového rozpočtu projektu</li>
+        <li>Licenční náklady DMS nad plán po výběru platformy</li>
+      </ul>
+    </div>
+  </div>
+</section>
+<!-- ═══ NEXT STEPS ═══ -->
+<section>
+  <div class="sec-head">
+    <div class="sec-tag">Výstupy tohoto meetingu</div>
+    <h2 class="sec-title">Co dnes <em>rozhodujeme.</em></h2>
+  </div>
+  <div class="next">
+    <div class="steps">
+      <div class="step"><div class="step-n">1</div><div><div class="step-title">Odsouhlasení koncepce a scope</div><p class="step-body">Je navržený přístup správný? Co je v rozsahu a co je explicitně mimo? Kde jsou hranice projektu?</p></div></div>
+      <div class="step"><div class="step-n">2</div><div><div class="step-title">Jmenování sponzora a PM</div><p class="step-body">Kdo bude sponzorem na úrovni vedení s reálným mandátem? Kdo je project manager?</p></div></div>
+      <div class="step"><div class="step-n">3</div><div><div class="step-title">Souhlas s budgetem pro Fázi 1</div><p class="step-body">Uvolnění zdrojů pro Iniciaci a zahájení Feasibility studie. Orientační investice: doplnit.</p></div></div>
+      <div class="step"><div class="step-n">4</div><div><div class="step-title">Termín stakeholder workshopu</div><p class="step-body">Workshop k Fázi 1 je připraven — 60+ otázek. Potřebujeme datum a seznam účastníků.</p></div></div>
+      <div class="step"><div class="step-n">5</div><div><div class="step-title">Kick-off komunikace</div><p class="step-body">Jak a kdy informovat zaměstnance? Kdo komunikaci podepíše? Jaký tón nastavíme od začátku?</p></div></div>
+    </div>
+    <div class="cta">
+      <div class="cta-tag">Klíčové otázky pro tuto místnost</div>
+      <h3 class="cta-title">Co projektový tým<br>dnes <em>potřebuje zodpovědět.</em></h3>
+      <p class="cta-intro">Projekt je připraven ke spuštění. Níže jsou otázky, na které PM potřebuje odpovědi od vedení ještě dnes.</p>
+      <div class="cta-qs">
+        <div class="cta-q">Co společnost přivedlo k rozhodnutí digitalizovat právě teď?</div>
+        <div class="cta-q">Jak vedení definuje úspěch projektu za 12 měsíců?</div>
+        <div class="cta-q">Existuje horní hranice budgetu, přes kterou projekt neschválíte?</div>
+        <div class="cta-q">Je stanoven deadline, nebo je časový rámec flexibilní?</div>
+        <div class="cta-q">Která oddělení jsou prioritou č. 1 — a co je předem mimo scope?</div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="footer-brand">Digitalizace kanceláří — Paper-less projekt</div>
+  <div class="footer-meta">
+    Projektová koncepce · Verze 1.0<br>
+    Zpracoval: PM · Datum: doplnit
+  </div>
+</footer>
+</div><!-- /canvas -->
+<script>
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    const group = el.parentElement.querySelectorAll(
+      '.why-card,.pillar,.doc,.risk,.step,.tl,.princ,.phase-item'
+    );
+    let delay = 0;
+    group.forEach(s => {
+      if (!s.classList.contains('in')) {
+        setTimeout(() => s.classList.add('in'), delay);
+        delay += 55;
+      }
+    });
+    io.unobserve(el);
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+document.querySelectorAll(
+  '.why-card,.pillar,.doc,.risk,.step,.tl,.princ,.phase-item'
+).forEach(el => io.observe(el));
+</script>
+</body>
+</html>
