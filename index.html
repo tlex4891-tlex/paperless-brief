@@ -548,6 +548,77 @@ footer {
   .canvas { padding:0 24px 80px; }
   .sec-head { grid-template-columns:1fr; gap:16px; }
 }
+/* ─── 4K / LARGE DISPLAY (BenQ 75″ 3840×2160) ─── */
+@media (min-width: 2560px) {
+  html { font-size: 175%; }
+  .canvas { max-width: 3200px; padding: 0 96px 160px; }
+  header { min-height: auto; }
+  .h-left { padding: 100px 80px 100px 0; }
+  .h-right { padding: 100px 0 100px 80px; }
+  .hero-title { font-size: clamp(72px, 4.5vw, 120px); }
+  .stats-row { gap: 64px; }
+  .stat-n { font-size: 52px; }
+  .phase-item { grid-template-columns: 48px 1fr 120px; gap: 20px; padding: 22px 0; }
+  .p-n { font-size: 14px; }
+  .p-name { font-size: 17px; }
+  .p-sub { font-size: 14px; }
+  .p-dur { font-size: 13px; }
+  section { padding: 120px 0; }
+  .sec-head { grid-template-columns: 300px 1fr; gap: 80px; margin-bottom: 80px; }
+  .sec-tag { font-size: 14px; }
+  .sec-title { font-size: clamp(40px, 3vw, 64px); }
+  .why-card { padding: 56px 48px; }
+  .w-icon { font-size: 42px; }
+  .w-title { font-size: 24px; }
+  .w-body { font-size: 17px; }
+  .approach-body { font-size: 18px; }
+  .princ-text { font-size: 17px; }
+  /* ─ Timeline (klíčová sekce) ─ */
+  .timeline-wrap { padding-top: 72px; }
+  .tl-dot { width: 44px; height: 44px; font-size: 16px; margin-bottom: 24px; }
+  .tl.gate .tl-dot { width: 50px; height: 50px; }
+  .tl-name { font-size: 16px; margin-bottom: 8px; }
+  .tl-dur { font-size: 14px; }
+  .tl-line { top: 22px; }
+  /* ─ Pillars ─ */
+  .pillar { padding: 48px 36px; }
+  .pill-icon { font-size: 40px; }
+  .pill-title { font-size: 18px; }
+  .pill-body { font-size: 15px; }
+  /* ─ Docs ─ */
+  .doc { padding: 40px 32px; }
+  .doc-n { font-size: 44px; }
+  .doc-title { font-size: 17px; }
+  .doc-body { font-size: 15px; }
+  .badge { font-size: 13px; padding: 5px 12px; }
+  /* ─ Risks ─ */
+  .risk { padding: 48px 44px; }
+  .risk-num { font-size: 68px; }
+  .risk-tag { font-size: 13px; }
+  .risk-items li { font-size: 17px; padding: 14px 0; }
+  /* ─ Next steps ─ */
+  .step { grid-template-columns: 68px 1fr; gap: 28px; padding: 30px 0; }
+  .step-n { font-size: 38px; }
+  .step-title { font-size: 20px; }
+  .step-body { font-size: 17px; }
+  .cta { padding: 64px 56px; }
+  .cta-title { font-size: 34px; }
+  .cta-intro { font-size: 17px; }
+  .cta-q { font-size: 17px; }
+  /* ─ Footer ─ */
+  .footer-brand { font-size: 20px; }
+  .footer-meta { font-size: 14px; }
+}
+/* ─── Full 4K (3840px+) further boost ─── */
+@media (min-width: 3600px) {
+  html { font-size: 200%; }
+  .canvas { max-width: 3600px; }
+  .hero-title { font-size: clamp(88px, 4vw, 140px); }
+  .tl-dot { width: 52px; height: 52px; font-size: 18px; }
+  .tl.gate .tl-dot { width: 58px; height: 58px; }
+  .tl-name { font-size: 18px; }
+  .tl-dur { font-size: 16px; }
+}
 @media print {
   * { animation:none !important; opacity:1 !important; transform:none !important; }
 }
