@@ -1,0 +1,76 @@
+# =============================================================================
+# Scraper Newsletter – konfigurace
+# =============================================================================
+
+# Seznam webů k scrapování
+# Každý web potřebuje:
+#   - name: zobrazovaný název
+#   - url: URL stránky s články / blogem
+#   - selector: CSS selektor pro jednotlivé články (kontejner)
+#   - title_selector: CSS selektor pro titulek článku (uvnitř kontejneru)
+#   - link_selector: CSS selektor pro odkaz (uvnitř kontejneru), nebo "self" pokud je kontejner <a>
+#   - date_selector: (volitelné) CSS selektor pro datum
+#   - summary_selector: (volitelné) CSS selektor pro perex/shrnutí
+#   - base_url: (volitelné) pokud jsou odkazy relativní
+
+sites:
+  - name: "ProjectManager.com"
+    url: "https://www.projectmanager.com/blog"
+    selector: "article.post-card, .blog-post-card, article"
+    title_selector: "h2 a, h3 a, .post-title a"
+    link_selector: "self_from_title"
+    summary_selector: "p, .excerpt, .post-excerpt"
+    base_url: "https://www.projectmanager.com"
+
+  - name: "PMI – Project Management Institute"
+    url: "https://www.pmi.org/learning/library"
+    selector: ".search-result, .card, article"
+    title_selector: "h3 a, h2 a, .card-title a"
+    link_selector: "self_from_title"
+    summary_selector: "p, .description, .card-text"
+    base_url: "https://www.pmi.org"
+
+  - name: "The Digital Project Manager"
+    url: "https://thedigitalprojectmanager.com/blog/"
+    selector: "article, .post-card"
+    title_selector: "h2 a, h3 a, .entry-title a"
+    link_selector: "self_from_title"
+    summary_selector: ".entry-summary p, .excerpt, p"
+    base_url: "https://thedigitalprojectmanager.com"
+
+  - name: "Monday.com Blog"
+    url: "https://monday.com/blog/"
+    selector: "article, .post-item, .blog-post"
+    title_selector: "h2 a, h3 a, .post-title a"
+    link_selector: "self_from_title"
+    summary_selector: "p, .excerpt"
+    base_url: "https://monday.com"
+
+  - name: "Asana Blog"
+    url: "https://asana.com/resources"
+    selector: "article, .resource-card, .card"
+    title_selector: "h2 a, h3 a, .card-title a"
+    link_selector: "self_from_title"
+    summary_selector: "p, .card-description"
+    base_url: "https://asana.com"
+
+# Nastavení newsletteru
+newsletter:
+  title: "Paperless Brief – Týdenní PM Přehled"
+  subtitle: "Nejlepší články z oblasti projektového řízení"
+  max_articles_per_site: 1
+  output_dir: "./output"
+  output_filename: "newsletter_{date}.html"
+
+# SMTP nastavení pro odesílání emailem (volitelné)
+# Vyplňte nebo nastavte přes env proměnné
+email:
+  enabled: false
+  smtp_host: "${SMTP_HOST:-smtp.gmail.com}"
+  smtp_port: 587
+  smtp_user: "${SMTP_USER}"
+  smtp_password: "${SMTP_PASSWORD}"
+  from_address: "${EMAIL_FROM}"
+  to_addresses:
+    - "${EMAIL_TO}"
+  subject: "Paperless Brief – Týdenní PM Přehled ({date})"
