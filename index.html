@@ -551,6 +551,21 @@ footer {
 /* ─── 4K / LARGE DISPLAY (BenQ 75″ 3840×2160) ─── */
 @media (min-width: 2560px) {
   html { font-size: 175%; }
+  /* ─ Vyšší kontrast textu na tmavém pozadí ─ */
+  :root {
+    --text:    #f2f4f8;
+    --dim:     #b8bfc9;
+    --muted:   #8a919e;
+  }
+  body { font-weight: 400; }
+  .hero-lead { color: var(--dim); }
+  .hero-lead strong { color: #fff; }
+  .w-body, .approach-body, .princ-text, .pill-body,
+  .doc-body, .risk-items li, .step-body, .cta-intro,
+  .cta-q { color: var(--dim); }
+  .approach-body strong, .princ-text strong { color: #fff; }
+  .p-sub, .p-dur, .stat-l, .tl-dur, .footer-meta,
+  .cta-tag, .risk-tag { color: var(--muted); }
   .canvas { max-width: 3200px; padding: 0 96px 160px; }
   header { min-height: auto; }
   .h-left { padding: 100px 80px 100px 0; }
