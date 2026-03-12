@@ -1,0 +1,19 @@
+# Environment variables
+.env
+.env.*
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Node (pro případ budoucího rozšíření)
+node_modules/
