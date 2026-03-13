@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<title>Vlastní účetní aplikace vs. INOVIO — Strategická analýza</title>
+<style>
+  @page {
+    size: A4;
+    margin: 25mm 20mm 25mm 20mm;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background: #fff;
+    padding: 0;
+  }
+
+  /* Cover page */
+  .cover {
+    text-align: center;
+    page-break-after: always;
+    padding: 200px 40px 60px 40px;
+  }
+  .cover-icon {
+    font-size: 64px;
+    margin-bottom: 30px;
+    color: #2563eb;
+  }
+  .cover h1 {
+    font-size: 28pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .cover h2 {
+    font-size: 16pt;
+    font-weight: 400;
+    color: #475569;
+    margin-bottom: 50px;
+  }
+  .cover-line {
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #2563eb, #7c3aed);
+    border-radius: 2px;
+    margin-bottom: 50px;
+  }
+  .cover-meta {
+    font-size: 10pt;
+    color: #94a3b8;
+  }
+  .cover-meta strong {
+    color: #64748b;
+  }
+
+  /* Content */
+  .content {
+    padding: 0 10px;
+  }
+
+  /* Section header */
+  .section-header {
+    margin-top: 40px;
+    margin-bottom: 24px;
+    page-break-after: avoid;
+  }
+  .section-header h2 {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #2563eb;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+  .section-header-line {
+    width: 50px;
+    height: 3px;
+    background: #2563eb;
+    border-radius: 2px;
+  }
+
+  /* Benefit card */
+  .benefit {
+    margin-bottom: 28px;
+    page-break-inside: avoid;
+    border-left: 4px solid #2563eb;
+    padding-left: 20px;
+  }
+  .benefit-number {
+    display: inline-block;
+    background: #2563eb;
+    color: #fff;
+    font-size: 9pt;
+    font-weight: 700;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+    border-radius: 50%;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  .benefit h3 {
+    display: inline;
+    font-size: 13pt;
+    font-weight: 700;
+    color: #0f172a;
+    vertical-align: middle;
+  }
+  .benefit p {
+    margin-top: 8px;
+    font-size: 10.5pt;
+    color: #334155;
+    line-height: 1.65;
+  }
+  .benefit .highlight {
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 10px 0;
+    font-size: 10pt;
+  }
+  th {
+    background: #f1f5f9;
+    font-weight: 700;
+    color: #0f172a;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+  .table-wrapper {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+
+  /* Timeline */
+  .timeline {
+    margin: 12px 0;
+    font-size: 10pt;
+  }
+  .timeline-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+  .timeline-label {
+    flex-shrink: 0;
+    width: 110px;
+    font-weight: 700;
+    color: #2563eb;
+  }
+  .timeline-desc {
+    color: #334155;
+  }
+
+  /* Comparison table */
+  .comparison-section {
+    margin-top: 36px;
+  }
+  .comparison-table th:first-child {
+    width: 28%;
+  }
+  .comparison-table .col-inovio {
+    background: #fef2f2;
+    color: #991b1b;
+    font-weight: 600;
+    text-align: center;
+  }
+  .comparison-table .col-custom {
+    background: #f0fdf4;
+    color: #166534;
+    font-weight: 600;
+    text-align: center;
+  }
+  .comparison-table td:nth-child(2) {
+    text-align: center;
+    color: #991b1b;
+  }
+  .comparison-table td:nth-child(3) {
+    text-align: center;
+    color: #166534;
+    font-weight: 600;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 50px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 9pt;
+    color: #94a3b8;
+    text-align: center;
+  }
+
+  /* AI list */
+  .ai-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+  }
+  .ai-list li {
+    padding: 3px 0 3px 20px;
+    position: relative;
+    font-size: 10.5pt;
+    color: #334155;
+  }
+  .ai-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #2563eb;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <div class="cover-icon">◆</div>
+  <h1>Vlastní účetní aplikace<br>vs. INOVIO</h1>
+  <div class="cover-line"></div>
+  <h2>Strategická analýza klíčových benefitů<br>vývoje řešení na míru</h2>
+  <div class="cover-meta">
+    <strong>Interní dokument</strong> · Březen 2026<br>
+    Připraveno pro rozhodování vedení
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <div class="section-header">
+    <h2>Klíčové benefity</h2>
+    <div class="section-header-line"></div>
+  </div>
+
+  <!-- BENEFIT 1 -->
+  <div class="benefit">
+    <span class="benefit-number">1</span>
+    <h3>Platíte jen za to, co skutečně používáte</h3>
+    <p>
+      INOVIO je krabicové řešení s desítkami modulů — platíte licenci za celek,
+      i když reálně využíváte jen zlomek funkcí. Vlastní aplikace obsahuje
+      <span class="highlight">přesně to, co potřebujete — nic víc, nic míň.</span>
+      Žádné plýtvání rozpočtem za nevyužité funkce, žádné zbytečné komplikace
+      v uživatelském rozhraní.
+    </p>
+  </div>
+
+  <!-- BENEFIT 2 -->
+  <div class="benefit">
+    <span class="benefit-number">2</span>
+    <h3>Celkové náklady vlastnictví (TCO) klesají v čase</h3>
+    <p>
+      U INOVIO platíte <span class="highlight">opakující se licenční poplatky
+      navždy</span> — s růstem počtu uživatelů a modulů rostou i náklady.
+      U vlastní aplikace jsou hlavní náklady jednorázové (vývoj), poté hradíte
+      pouze hosting a údržbu. Čím déle aplikaci provozujete, tím více šetříte.
+    </p>
+    <div class="table-wrapper">
+      <table>
+        <tr><th></th><th>INOVIO</th><th>Vlastní aplikace</th></tr>
+        <tr><td><strong>Rok 1</strong></td><td>Licence + implementace</td><td>Vývoj + hosting</td></tr>
+        <tr><td><strong>Rok 2+</strong></td><td>Licence (opakovaně)</td><td>Pouze hosting + údržba</td></tr>
+        <tr><td><strong>Rok 5+</strong></td><td>Kumulativně vysoké náklady</td><td>Investice se vrátila</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- BENEFIT 3 -->
+  <div class="benefit">
+    <span class="benefit-number">3</span>
+    <h3>Absolutní flexibilita v customizaci</h3>
+    <p>
+      U INOVIO jste omezeni tím, co vendor umožní nastavit. Potřebujete
+      nestandardní schvalovací řetězec? Specifický report? Unikátní workflow?
+      Čekáte na vendora, nebo to prostě nejde. U vlastní aplikace implementujete
+      <span class="highlight">přesně to, co vaše firma potřebuje</span> —
+      bez kompromisů a bez závislosti na roadmapě cizí společnosti.
+    </p>
+  </div>
+
+  <!-- BENEFIT 4 -->
+  <div class="benefit">
+    <span class="benefit-number">4</span>
+    <h3>Rychlost nasazování změn</h3>
+    <p>
+      Potřebujete novou funkci nebo úpravu? U INOVIO: požadavek → prioritizace
+      vendorem → čekání na release → nasazení.
+      <span class="highlight">Typicky týdny až měsíce.</span>
+      U vlastní aplikace: zadání → vývoj → nasazení.
+      <span class="highlight">Typicky dny.</span>
+      V dynamickém prostředí je schopnost rychle reagovat na změny
+      konkurenční výhoda.
+    </p>
+  </div>
+
+  <!-- BENEFIT 5 -->
+  <div class="benefit">
+    <span class="benefit-number">5</span>
+    <h3>Plná kontrola nad daty a bezpečností</h3>
+    <p>
+      S INOVIO svěřujete citlivá účetní data třetí straně za podmínek, které
+      plně nekontrolujete. U vlastní aplikace
+      <span class="highlight">vy rozhodujete</span>, kde data leží, kdo k nim
+      má přístup, jak jsou šifrována a jak dlouho se uchovávají. To je klíčové
+      pro GDPR compliance i interní bezpečnostní politiku.
+    </p>
+  </div>
+
+  <!-- BENEFIT 6 -->
+  <div class="benefit">
+    <span class="benefit-number">6</span>
+    <h3>Žádný vendor lock-in</h3>
+    <p>
+      Závislost na jednom dodavateli je strategické riziko. Zdraží licence?
+      Nemáte alternativu. Změní podmínky? Musíte přijmout. Ukončí produkt?
+      Musíte migrovat pod tlakem. Zkrachuje? Zůstanete bez podpory.
+      Vlastní aplikace = <span class="highlight">váš kód, vaše data,
+      vaše nezávislost.</span> Žádná závislost na životním cyklu cizího produktu.
+    </p>
+  </div>
+
+  <!-- BENEFIT 7 -->
+  <div class="benefit">
+    <span class="benefit-number">7</span>
+    <h3>Modularita a postupný rozvoj</h3>
+    <p>
+      Místo big-bang implementace krabicového řešení můžete stavět postupně.
+      <span class="highlight">Každý modul přináší hodnotu okamžitě</span>,
+      bez nutnosti kupovat a implementovat celý systém najednou. Můžete
+      prioritizovat podle aktuálních potřeb firmy.
+    </p>
+    <div class="timeline">
+      <div class="timeline-item">
+        <span class="timeline-label">Měsíc 1–2:</span>
+        <span class="timeline-desc">Evidence faktur + schvalování</span>
+      </div>
+      <div class="timeline-item">
+        <span class="timeline-label">Měsíc 3:</span>
+        <span class="timeline-desc">Dashboard + reporty</span>
+      </div>
+      <div class="timeline-item">
+        <span class="timeline-label">Měsíc 6:</span>
+        <span class="timeline-desc">Integrace na ERP</span>
+      </div>
+      <div class="timeline-item">
+        <span class="timeline-label">Měsíc 9:</span>
+        <span class="timeline-desc">Datové schránky + rozšířené moduly</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BENEFIT 8 -->
+  <div class="benefit">
+    <span class="benefit-number">8</span>
+    <h3>Konkurenční výhoda a diferenciace</h3>
+    <p>
+      INOVIO používají stovky firem se stejnými procesy a omezeními. Vlastní
+      aplikace vám umožní <span class="highlight">digitalizovat a automatizovat
+      procesy způsobem, který je unikátní pro vaši firmu</span> — a který
+      konkurence s krabicovým řešením nedokáže replikovat. Interní nástroje
+      šité na míru jsou často tím, co odlišuje efektivní firmy od průměrných.
+    </p>
+  </div>
+
+  <!-- BENEFIT 9 -->
+  <div class="benefit">
+    <span class="benefit-number">9</span>
+    <h3>Integrace s AI a budoucí technologie</h3>
+    <p>
+      INOVIO přidává AI funkce tempem, které určuje jejich produkt a roadmapa.
+      U vlastní aplikace můžete <span class="highlight">okamžitě integrovat
+      nejnovější AI modely</span> pro:
+    </p>
+    <ul class="ai-list">
+      <li>Inteligentní kategorizaci a vytěžování dokladů</li>
+      <li>Predikci cashflow a automatické párování plateb</li>
+      <li>Detekci anomálií a podvodů</li>
+      <li>Přirozený jazyk pro dotazy nad daty</li>
+    </ul>
+    <p style="margin-top: 6px;">
+      <span class="highlight">Technologický náskok místo čekání na vendora.</span>
+    </p>
+  </div>
+
+  <!-- BENEFIT 10 -->
+  <div class="benefit">
+    <span class="benefit-number">10</span>
+    <h3>Vlastnictví know-how a intelektuálního vlastnictví</h3>
+    <p>
+      S INOVIO je veškeré know-how u vendora. Odejdete = začínáte od nuly.
+      Vlastní aplikace znamená, že <span class="highlight">firma vlastní
+      intelektuální vlastnictví</span>, rozumí svým procesům na hlubší úrovni
+      a buduje interní kompetence. To má hodnotu nejen provozní, ale i při
+      oceňování firmy.
+    </p>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div class="comparison-section">
+    <div class="section-header">
+      <h2>Souhrnné porovnání</h2>
+      <div class="section-header-line"></div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="comparison-table">
+        <tr>
+          <th>Kritérium</th>
+          <th class="col-inovio">INOVIO</th>
+          <th class="col-custom">Vlastní aplikace</th>
+        </tr>
+        <tr>
+          <td><strong>Náklady v čase</strong></td>
+          <td>Rostoucí</td>
+          <td>Klesající</td>
+        </tr>
+        <tr>
+          <td><strong>Customizace</strong></td>
+          <td>Omezená vendorem</td>
+          <td>Neomezená</td>
+        </tr>
+        <tr>
+          <td><strong>Rychlost změn</strong></td>
+          <td>Týdny – měsíce</td>
+          <td>Dny</td>
+        </tr>
+        <tr>
+          <td><strong>Vendor lock-in</strong></td>
+          <td>Ano</td>
+          <td>Ne</td>
+        </tr>
+        <tr>
+          <td><strong>Kontrola nad daty</strong></td>
+          <td>Částečná</td>
+          <td>Plná</td>
+        </tr>
+        <tr>
+          <td><strong>Nevyužité funkce</strong></td>
+          <td>Platíte za ně</td>
+          <td>Neexistují</td>
+        </tr>
+        <tr>
+          <td><strong>AI a inovace</strong></td>
+          <td>Tempo vendora</td>
+          <td>Vaše tempo</td>
+        </tr>
+        <tr>
+          <td><strong>Vlastnictví IP</strong></td>
+          <td>Vendor</td>
+          <td>Vy</td>
+        </tr>
+        <tr>
+          <td><strong>Modularita</strong></td>
+          <td>Vše nebo nic</td>
+          <td>Postupný rozvoj</td>
+        </tr>
+        <tr>
+          <td><strong>Bezpečnostní riziko</strong></td>
+          <td>Závislost na třetí straně</td>
+          <td>Pod vaší kontrolou</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    Interní dokument · Březen 2026 · Připraveno pro strategické rozhodování vedení
+  </div>
+
+</div>
+
+</body>
+</html>

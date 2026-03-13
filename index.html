@@ -367,6 +367,65 @@ section:last-of-type { border-bottom: none; }
   color:#fff; margin-bottom:8px; line-height:1.3;
 }
 .pill-body { font-size:12px; color:var(--muted); line-height:1.6; }
+/* ─── FLOATING NAV ─── */
+.fnav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(12,14,17,.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transform: translateY(-100%);
+  transition: transform .35s ease;
+}
+.fnav.visible { transform: none; }
+.fnav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 52px;
+}
+.fnav-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dim);
+  text-decoration: none;
+  transition: color .2s;
+}
+.fnav-brand:hover { color: #fff; }
+.fnav-links { display: flex; gap: 28px; align-items: center; }
+.fnav-link {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 6px 0;
+  position: relative;
+  transition: color .2s;
+}
+.fnav-link:hover { color: var(--gold); }
+.fnav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transition: transform .25s;
+}
+.fnav-link:hover::after { transform: scaleX(1); }
+@media (min-width: 2560px) {
+  .fnav-inner { max-width: 3200px; padding: 0 96px; height: 68px; }
+  .fnav-brand { font-size: 18px; }
+  .fnav-link { font-size: 14px; }
+}
 /* ─── DOCS ─── */
 .docs {
   display:grid;
@@ -640,6 +699,15 @@ footer {
 </style>
 </head>
 <body>
+<!-- ═══ FLOATING NAV ═══ -->
+<nav class="fnav" id="fnav">
+  <div class="fnav-inner">
+    <a href="index.html" class="fnav-brand">Paper-less.</a>
+    <div class="fnav-links">
+      <a href="ownapp.html" class="fnav-link">Vlastní aplikace vs. INOVIO</a>
+    </div>
+  </div>
+</nav>
 <div class="canvas">
 <!-- ═══ HEADER / HERO ═══ -->
 <header>
@@ -866,6 +934,15 @@ const io = new IntersectionObserver((entries) => {
 document.querySelectorAll(
   '.why-card,.pillar,.doc,.risk,.step,.tl,.princ,.phase-item'
 ).forEach(el => io.observe(el));
+/* ─ Floating nav show/hide ─ */
+const fnav = document.getElementById('fnav');
+let lastY = 0;
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  if (y > 300) fnav.classList.add('visible');
+  else fnav.classList.remove('visible');
+  lastY = y;
+}, { passive: true });
 </script>
 </body>
 </html>
