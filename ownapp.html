@@ -573,6 +573,110 @@ footer {
   html { font-size: 200%; }
   .canvas { max-width: 3600px; }
 }
+/* ─── 5K (5120px+) ─── */
+@media (min-width: 5000px) {
+  html { font-size: 275%; }
+  :root { --text: #f4f6fa; --dim: #c4cad4; --muted: #98a0ae; }
+  body { font-weight: 400; }
+  .canvas { max-width: 4800px; padding: 0 140px 220px; }
+  .fnav-inner { max-width: 4800px; padding: 0 140px; height: 88px; }
+  .fnav-brand { font-size: 24px; }
+  .fnav-link { font-size: 17px; letter-spacing: .12em; }
+  .fnav-links { gap: 40px; }
+  .hero { padding: 160px 80px 100px; }
+  .hero-kicker { font-size: 15px; letter-spacing: .22em; margin-bottom: 56px; }
+  .hero-kicker::before, .hero-kicker::after { width: 56px; }
+  .hero-claim { font-size: clamp(100px, 4.5vw, 180px); margin-bottom: 44px; }
+  .hero-claim em { font-size: .68em; margin-top: 12px; }
+  .hero-sub { font-size: 24px; max-width: 720px; margin-bottom: 72px; }
+  .hero-vs { gap: 64px; }
+  .hero-vs-label { font-size: 14px; margin-bottom: 10px; }
+  .hero-vs-name { font-size: 30px; }
+  .hero-vs-divider::after { font-size: 12px; }
+  .sec-head { grid-template-columns: 380px 1fr; gap: 100px; margin-bottom: 100px; }
+  .sec-tag { font-size: 17px; letter-spacing: .18em; }
+  .sec-tag::before { width: 40px; }
+  .sec-title { font-size: clamp(52px, 3vw, 80px); }
+  section { padding: 120px 0; }
+  .battle-header { gap: 24px; margin-bottom: 28px; }
+  .battle-num { font-size: 64px; }
+  .battle-claim { font-size: clamp(36px, 2.2vw, 52px); }
+  .battle-side { padding: 56px 60px; }
+  .battle-label { font-size: 16px; margin-bottom: 20px; }
+  .battle-text { font-size: 22px; line-height: 1.75; }
+  .battle-verdict { font-size: 14px; padding: 5px 14px; margin-top: 20px; }
+  .battle-split { margin-bottom: 64px; }
+  .score-wrap { border-width: 2px; }
+  .score-table th { font-size: 16px; padding: 24px 40px; }
+  .score-table td { font-size: 21px; padding: 22px 40px; }
+  .dot-lose, .dot-win { width: 12px; height: 12px; margin-right: 12px; }
+  .cta-section { padding: 120px 0 64px; }
+  .cta-box { padding: 80px 76px; gap: 80px; }
+  .cta-tag { font-size: 14px; margin-bottom: 22px; }
+  .cta-title { font-size: 42px; margin-bottom: 18px; }
+  .cta-body { font-size: 22px; }
+  .cta-point { font-size: 21px; gap: 18px; }
+  .cta-point::before { font-size: 12px; margin-top: 7px; }
+  .cta-right { gap: 22px; }
+  .cta-back { font-size: 15px; margin-top: 32px; gap: 12px; }
+  .cta-back::before { font-size: 18px; }
+  footer { padding: 60px 0 48px; }
+  .footer-brand { font-size: 26px; }
+  .footer-meta { font-size: 18px; }
+}
+/* ─── 8K Ultra HD (7680×4320+) — optimized for 4-5m viewing distance ─── */
+@media (min-width: 7200px) {
+  html { font-size: 400%; }
+  :root { --text: #f6f8fc; --dim: #cdd3dd; --muted: #a0a8b6; }
+  body { font-weight: 400; letter-spacing: .01em; }
+  .canvas { max-width: 7200px; padding: 0 200px 320px; }
+  .fnav-inner { max-width: 7200px; padding: 0 200px; height: 120px; }
+  .fnav-brand { font-size: 34px; }
+  .fnav-link { font-size: 22px; letter-spacing: .14em; }
+  .fnav-links { gap: 56px; }
+  .hero { padding: 220px 120px 140px; }
+  .hero-kicker { font-size: 20px; letter-spacing: .24em; margin-bottom: 72px; }
+  .hero-kicker::before, .hero-kicker::after { width: 72px; height: 2px; }
+  .hero-claim { font-size: clamp(140px, 3.8vw, 260px); margin-bottom: 56px; line-height: .9; }
+  .hero-claim em { font-size: .66em; margin-top: 16px; }
+  .hero-sub { font-size: 34px; max-width: 1000px; line-height: 1.8; margin-bottom: 88px; }
+  .hero-vs { gap: 88px; }
+  .hero-vs-label { font-size: 18px; letter-spacing: .18em; margin-bottom: 14px; }
+  .hero-vs-name { font-size: 40px; }
+  .hero-vs-divider::after { font-size: 14px; letter-spacing: .18em; }
+  .sec-head { grid-template-columns: 480px 1fr; gap: 120px; margin-bottom: 120px; }
+  .sec-tag { font-size: 22px; letter-spacing: .2em; }
+  .sec-tag::before { width: 52px; height: 2px; }
+  .sec-title { font-size: clamp(68px, 2.8vw, 110px); }
+  section { padding: 200px 0; }
+  .battle-header { grid-template-columns: 60px 1fr; gap: 32px; margin-bottom: 36px; }
+  .battle-num { font-size: 88px; }
+  .battle-claim { font-size: clamp(48px, 2.2vw, 72px); }
+  .battle-side { padding: 80px 84px; }
+  .battle-side.win::before { width: 5px; }
+  .battle-label { font-size: 20px; letter-spacing: .16em; margin-bottom: 28px; }
+  .battle-text { font-size: 30px; line-height: 1.8; }
+  .battle-verdict { font-size: 18px; padding: 7px 18px; margin-top: 28px; border-radius: 4px; }
+  .battle-split { margin-bottom: 80px; gap: 2px; }
+  .score-wrap { border-width: 2px; }
+  .score-table th { font-size: 20px; padding: 32px 52px; border-bottom-width: 3px; }
+  .score-table td { font-size: 28px; padding: 28px 52px; }
+  .dot-lose, .dot-win { width: 16px; height: 16px; margin-right: 16px; }
+  .cta-section { padding: 180px 0 80px; }
+  .cta-box { padding: 100px 96px; gap: 100px; }
+  .cta-box::before { width: 5px; }
+  .cta-tag { font-size: 18px; letter-spacing: .2em; margin-bottom: 28px; }
+  .cta-title { font-size: 56px; margin-bottom: 22px; }
+  .cta-body { font-size: 30px; line-height: 1.75; }
+  .cta-point { font-size: 28px; gap: 22px; line-height: 1.6; }
+  .cta-point::before { font-size: 16px; margin-top: 9px; }
+  .cta-right { gap: 28px; }
+  .cta-back { font-size: 20px; margin-top: 40px; gap: 14px; }
+  .cta-back::before { font-size: 24px; }
+  footer { padding: 80px 0 64px; }
+  .footer-brand { font-size: 34px; }
+  .footer-meta { font-size: 22px; line-height: 1.7; }
+}
 @media print {
   * { animation:none !important; opacity:1 !important; transform:none !important; }
 }
