@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vlastní aplikace vs. INOVIO — Build vs. Buy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE (shared with index.html) ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:      #0c0e11;
+  --surface: #13161a;
+  --border:  #1e2329;
+  --border2: #2a3040;
+  --text:    #e8eaf0;
+  --muted:   #5c6470;
+  --dim:     #8a919e;
+  --gold:    #c9a84c;
+  --gold-d:  #8a6e2e;
+  --gold-glow: rgba(201,168,76,.12);
+  --lose:    #5c6470;
+  --lose-bg: rgba(92,100,112,.06);
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+body::after {
+  content:'';
+  position:fixed; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:9999;
+}
+
+/* ─── FLOATING NAV ─── */
+.fnav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(12,14,17,.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transform: translateY(-100%);
+  transition: transform .35s ease;
+}
+.fnav.visible { transform: none; }
+.fnav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 52px;
+}
+.fnav-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dim);
+  text-decoration: none;
+  transition: color .2s;
+}
+.fnav-brand:hover { color: #fff; }
+.fnav-links { display: flex; gap: 28px; align-items: center; }
+.fnav-link {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+  padding: 6px 0;
+  position: relative;
+  transition: color .2s;
+}
+.fnav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transition: transform .25s;
+}
+.fnav-link:hover::after { transform: scaleX(1); }
+
+/* ─── LAYOUT ─── */
+.canvas {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 48px 100px;
+}
+
+/* ─── HERO ─── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  padding: 120px 48px 80px;
+}
+.hero::before {
+  content:'';
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity:.3;
+}
+.hero-kicker {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
+  display: flex; align-items: center; gap: 14px;
+  opacity: 0; animation: fadeUp .7s .1s ease both;
+}
+.hero-kicker::before, .hero-kicker::after {
+  content: '';
+  width: 40px; height: 1px;
+  background: var(--gold-d);
+}
+.hero-claim {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(48px, 5.5vw, 92px);
+  line-height: .92;
+  letter-spacing: -.03em;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 32px;
+  opacity: 0; animation: fadeUp .7s .25s ease both;
+}
+.hero-claim em {
+  display: block;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--gold);
+  font-size: .68em;
+  margin-top: 8px;
+}
+.hero-sub {
+  font-size: 16px;
+  color: var(--dim);
+  max-width: 540px;
+  line-height: 1.7;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 56px;
+  opacity: 0; animation: fadeUp .7s .4s ease both;
+}
+.hero-sub strong { color: var(--text); font-weight: 400; }
+/* VS badge in hero */
+.hero-vs {
+  display: flex;
+  gap: 48px;
+  position: relative;
+  z-index: 1;
+  opacity: 0; animation: fadeUp .7s .55s ease both;
+}
+.hero-vs-side {
+  text-align: center;
+}
+.hero-vs-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.hero-vs-label.old { color: var(--muted); }
+.hero-vs-label.new { color: var(--gold); }
+.hero-vs-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+}
+.hero-vs-name.old { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--border2); }
+.hero-vs-name.new { color: var(--gold); }
+.hero-vs-divider {
+  width: 1px;
+  background: var(--border2);
+  align-self: stretch;
+  position: relative;
+}
+.hero-vs-divider::after {
+  content: 'VS';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: .15em;
+  color: var(--gold);
+  background: var(--bg);
+  padding: 6px 0;
+}
+
+/* ─── SECTION COMMON ─── */
+section {
+  padding: 88px 0;
+  border-bottom: 1px solid var(--border);
+}
+section:last-of-type { border-bottom: none; }
+.sec-head {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 60px;
+  align-items: start;
+  margin-bottom: 56px;
+}
+.sec-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding-top: 8px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-tag::before {
+  content:'';
+  width: 28px; height: 1px;
+  background: var(--gold);
+  display: block;
+}
+.sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(30px, 3vw, 44px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -.025em;
+  color: #fff;
+}
+.sec-title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--gold);
+}
+
+/* ─── BATTLE CARDS (split-screen VS) ─── */
+.battle {
+  margin-bottom: 2px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .5s, transform .5s;
+}
+.battle.in { opacity: 1; transform: none; }
+.battle-header {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.battle-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 38px;
+  font-weight: 900;
+  color: var(--border2);
+  line-height: 1;
+}
+.battle-claim {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(20px, 2.2vw, 30px);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+}
+.battle-claim em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--gold);
+}
+.battle-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 48px;
+}
+.battle-side {
+  padding: 32px 36px;
+  position: relative;
+  overflow: hidden;
+}
+.battle-side.lose {
+  background: var(--surface);
+}
+.battle-side.win {
+  background: var(--surface);
+  border-left: none;
+}
+/* gold glow on win side */
+.battle-side.win::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--gold), var(--gold-d));
+}
+.battle-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.battle-side.lose .battle-label { color: var(--muted); }
+.battle-side.win .battle-label { color: var(--gold); }
+.battle-text {
+  font-size: 14px;
+  line-height: 1.7;
+}
+.battle-side.lose .battle-text {
+  color: var(--muted);
+}
+.battle-side.win .battle-text {
+  color: var(--dim);
+}
+.battle-side.win .battle-text strong {
+  color: var(--gold);
+  font-weight: 500;
+}
+.battle-side.lose .battle-text strong {
+  color: var(--dim);
+  font-weight: 400;
+}
+/* verdict tag */
+.battle-verdict {
+  display: inline-block;
+  margin-top: 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .08em;
+  padding: 3px 10px;
+  border-radius: 2px;
+}
+.battle-side.lose .battle-verdict {
+  background: rgba(92,100,112,.1);
+  color: var(--muted);
+}
+.battle-side.win .battle-verdict {
+  background: var(--gold-glow);
+  color: var(--gold);
+}
+
+/* ─── SCOREBOARD TABLE ─── */
+.score-wrap {
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.score-table th {
+  background: var(--surface);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 16px 24px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+.score-table th:nth-child(2) { text-align: center; }
+.score-table th:nth-child(3) { text-align: center; color: var(--gold); }
+.score-table td {
+  padding: 14px 24px;
+  font-size: 13.5px;
+  color: var(--dim);
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+}
+.score-table tr:last-child td { border-bottom: none; }
+.score-table tbody tr:hover { background: var(--gold-glow); }
+.score-table td:first-child {
+  font-weight: 500;
+  color: var(--text);
+}
+.score-table td:nth-child(2) {
+  text-align: center;
+  color: var(--muted);
+}
+.score-table td:nth-child(3) {
+  text-align: center;
+  color: var(--gold);
+  font-weight: 500;
+}
+/* score dots */
+.dot-lose, .dot-win {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.dot-lose { background: var(--muted); opacity: .4; }
+.dot-win { background: var(--gold); }
+
+/* ─── CTA ─── */
+.cta-section {
+  padding: 88px 0 44px;
+}
+.cta-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 56px 52px;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.cta-box::before {
+  content:'';
+  position: absolute; top:0; left:0; bottom:0; width:3px;
+  background: linear-gradient(180deg, var(--gold), transparent);
+}
+.cta-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.cta-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  color: #fff;
+  margin-bottom: 14px;
+}
+.cta-title em { color: var(--gold); font-style: italic; }
+.cta-body {
+  font-size: 14px;
+  color: var(--dim);
+  line-height: 1.7;
+}
+.cta-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.cta-point {
+  display: flex;
+  gap: 14px;
+  font-size: 13.5px;
+  color: var(--dim);
+  line-height: 1.5;
+}
+.cta-point::before {
+  content: '◆';
+  color: var(--gold);
+  flex-shrink: 0;
+  font-size: 8px;
+  margin-top: 5px;
+}
+.cta-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+  transition: color .2s;
+}
+.cta-back:hover { color: #fff; }
+.cta-back::before {
+  content: '←';
+  font-size: 14px;
+}
+
+/* ─── FOOTER ─── */
+footer {
+  padding: 44px 0 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border);
+}
+.footer-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px;
+  color: var(--dim);
+}
+.footer-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+  line-height: 1.6;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:none; }
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 980px) {
+  .canvas { padding: 0 24px 80px; }
+  .hero { padding: 100px 24px 60px; }
+  .hero-claim { font-size: clamp(36px, 8vw, 52px); }
+  .hero-vs { flex-direction: column; gap: 16px; }
+  .hero-vs-divider { width: 100%; height: 1px; }
+  .hero-vs-divider::after { display: none; }
+  .sec-head { grid-template-columns: 1fr; gap: 16px; }
+  .battle-split { grid-template-columns: 1fr; }
+  .cta-box { grid-template-columns: 1fr; gap: 32px; }
+}
+
+/* ─── 4K ─── */
+@media (min-width: 2560px) {
+  html { font-size: 175%; }
+  :root { --text: #f2f4f8; --dim: #b8bfc9; --muted: #8a919e; }
+  body { font-weight: 400; }
+  .canvas { max-width: 3200px; padding: 0 96px 160px; }
+  .fnav-inner { max-width: 3200px; padding: 0 96px; height: 68px; }
+  .fnav-brand { font-size: 18px; }
+  .fnav-link { font-size: 14px; }
+  .hero-claim { font-size: clamp(72px, 4.5vw, 120px); }
+  .battle-claim { font-size: clamp(28px, 2.2vw, 40px); }
+  .battle-num { font-size: 52px; }
+  .battle-side { padding: 44px 48px; }
+  .battle-text { font-size: 18px; }
+  .battle-label { font-size: 13px; }
+  .score-table th { font-size: 13px; padding: 20px 32px; }
+  .score-table td { font-size: 17px; padding: 18px 32px; }
+  .sec-head { grid-template-columns: 300px 1fr; gap: 80px; margin-bottom: 80px; }
+  .sec-tag { font-size: 14px; }
+  .sec-title { font-size: clamp(40px, 3vw, 64px); }
+  .cta-box { padding: 72px 68px; }
+  .cta-title { font-size: 34px; }
+  .cta-body, .cta-point { font-size: 17px; }
+  .footer-brand { font-size: 20px; }
+  .footer-meta { font-size: 14px; }
+}
+@media (min-width: 3600px) {
+  html { font-size: 200%; }
+  .canvas { max-width: 3600px; }
+}
+@media print {
+  * { animation:none !important; opacity:1 !important; transform:none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ FLOATING NAV ═══ -->
+<nav class="fnav" id="fnav">
+  <div class="fnav-inner">
+    <a href="index.html" class="fnav-brand">Paper-less.</a>
+    <div class="fnav-links">
+      <a href="ownapp.html" class="fnav-link">Build vs. Buy</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-kicker">Build vs. Buy</div>
+  <h1 class="hero-claim">
+    Vaše firma.<br>Vaše data.<br><em>Váš kód.</em>
+  </h1>
+  <p class="hero-sub">
+    Proč stavíme vlastní řešení místo krabicového software.
+    <strong>5 klíčových důvodů, proč je vlastní aplikace strategicky správná volba.</strong>
+  </p>
+  <div class="hero-vs">
+    <div class="hero-vs-side">
+      <div class="hero-vs-label old">Krabicové řešení</div>
+      <div class="hero-vs-name old">INOVIO</div>
+    </div>
+    <div class="hero-vs-divider"></div>
+    <div class="hero-vs-side">
+      <div class="hero-vs-label new">Řešení na míru</div>
+      <div class="hero-vs-name new">Vlastní aplikace</div>
+    </div>
+  </div>
+</div>
+
+<div class="canvas">
+
+<!-- ═══ 5 KILLER ARGUMENTS ═══ -->
+<section>
+  <div class="sec-head">
+    <div class="sec-tag">5 klíčových důvodů</div>
+    <h2 class="sec-title">Proč stavět<br><em>vlastní řešení.</em></h2>
+  </div>
+
+  <!-- BATTLE 1 -->
+  <div class="battle">
+    <div class="battle-header">
+      <div class="battle-num">1</div>
+      <div class="battle-claim">0 % za funkce,<br><em>které nepotřebujete.</em></div>
+    </div>
+    <div class="battle-split">
+      <div class="battle-side lose">
+        <div class="battle-label">INOVIO</div>
+        <p class="battle-text">Desítky modulů v licenci. <strong>Využíváte zlomek, platíte za vše.</strong> Složité rozhraní plné funkcí, které nikdo nepoužívá.</p>
+        <div class="battle-verdict">Plýtvá rozpočtem</div>
+      </div>
+      <div class="battle-side win">
+        <div class="battle-label">Vlastní aplikace</div>
+        <p class="battle-text">Přesně to, co potřebujete. <strong>Každá funkce existuje, protože ji někdo používá.</strong> Čisté rozhraní, žádný balast.</p>
+        <div class="battle-verdict">Efektivní investice</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BATTLE 2 -->
+  <div class="battle">
+    <div class="battle-header">
+      <div class="battle-num">2</div>
+      <div class="battle-claim">Dny, ne měsíce.<br><em>Rychlost je konkurenční výhoda.</em></div>
+    </div>
+    <div class="battle-split">
+      <div class="battle-side lose">
+        <div class="battle-label">INOVIO</div>
+        <p class="battle-text">Požadavek &rarr; prioritizace vendorem &rarr; čekání na release &rarr; nasazení. <strong>Typicky týdny až měsíce.</strong></p>
+        <div class="battle-verdict">Čekáte na cizího</div>
+      </div>
+      <div class="battle-side win">
+        <div class="battle-label">Vlastní aplikace</div>
+        <p class="battle-text">Zadání &rarr; vývoj &rarr; nasazení. <strong>Typicky dny.</strong> V dynamickém prostředí je schopnost rychle reagovat rozhodující.</p>
+        <div class="battle-verdict">Váš čas, vaše tempo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BATTLE 3 -->
+  <div class="battle">
+    <div class="battle-header">
+      <div class="battle-num">3</div>
+      <div class="battle-claim">Vaše data,<br><em>vaše pravidla.</em></div>
+    </div>
+    <div class="battle-split">
+      <div class="battle-side lose">
+        <div class="battle-label">INOVIO</div>
+        <p class="battle-text">Citlivá účetní data u třetí strany. <strong>Podmínky určuje vendor.</strong> GDPR compliance závislá na někom jiném.</p>
+        <div class="battle-verdict">Částečná kontrola</div>
+      </div>
+      <div class="battle-side win">
+        <div class="battle-label">Vlastní aplikace</div>
+        <p class="battle-text"><strong>Vy rozhodujete</strong>, kde data leží, kdo k nim má přístup, jak jsou šifrována. Plná kontrola nad bezpečností a GDPR.</p>
+        <div class="battle-verdict">Plná kontrola</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BATTLE 4 -->
+  <div class="battle">
+    <div class="battle-header">
+      <div class="battle-num">4</div>
+      <div class="battle-claim">Žádný vendor lock-in.<br><em>Žádná závislost.</em></div>
+    </div>
+    <div class="battle-split">
+      <div class="battle-side lose">
+        <div class="battle-label">INOVIO</div>
+        <p class="battle-text">Zdraží licence? <strong>Nemáte alternativu.</strong> Změní podmínky? Musíte přijmout. Zkrachuje? Zůstáváte bez podpory.</p>
+        <div class="battle-verdict">Strategické riziko</div>
+      </div>
+      <div class="battle-side win">
+        <div class="battle-label">Vlastní aplikace</div>
+        <p class="battle-text"><strong>Váš kód, vaše data, vaše nezávislost.</strong> Žádná závislost na životním cyklu cizího produktu. Žádné překvapení.</p>
+        <div class="battle-verdict">Plná nezávislost</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BATTLE 5 -->
+  <div class="battle">
+    <div class="battle-header">
+      <div class="battle-num">5</div>
+      <div class="battle-claim">AI-ready<br><em>od prvního dne.</em></div>
+    </div>
+    <div class="battle-split">
+      <div class="battle-side lose">
+        <div class="battle-label">INOVIO</div>
+        <p class="battle-text">AI funkce přidává vendor vlastním tempem. <strong>Čekáte na jejich roadmapu.</strong> Inovujete, až vám to dovolí.</p>
+        <div class="battle-verdict">Tempo vendora</div>
+      </div>
+      <div class="battle-side win">
+        <div class="battle-label">Vlastní aplikace</div>
+        <p class="battle-text"><strong>Okamžitá integrace nejnovějších AI modelů.</strong> Automatické vytěžování dokladů, predikce cashflow, detekce anomálií. Budoucnost je už tady.</p>
+        <div class="battle-verdict">Technologický náskok</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SCOREBOARD ═══ -->
+<section>
+  <div class="sec-head">
+    <div class="sec-tag">Scoreboard</div>
+    <h2 class="sec-title">Souhrnné<br><em>porovnání.</em></h2>
+  </div>
+  <div class="score-wrap">
+    <table class="score-table">
+      <thead>
+        <tr>
+          <th>Kritérium</th>
+          <th>INOVIO</th>
+          <th>Vlastní aplikace</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Náklady v čase</td><td><span class="dot-lose"></span>Rostoucí</td><td><span class="dot-win"></span>Klesající</td></tr>
+        <tr><td>Customizace</td><td><span class="dot-lose"></span>Omezená vendorem</td><td><span class="dot-win"></span>Neomezená</td></tr>
+        <tr><td>Rychlost změn</td><td><span class="dot-lose"></span>Týdny &ndash; měsíce</td><td><span class="dot-win"></span>Dny</td></tr>
+        <tr><td>Vendor lock-in</td><td><span class="dot-lose"></span>Ano</td><td><span class="dot-win"></span>Ne</td></tr>
+        <tr><td>Kontrola nad daty</td><td><span class="dot-lose"></span>Částečná</td><td><span class="dot-win"></span>Plná</td></tr>
+        <tr><td>Nevyužité funkce</td><td><span class="dot-lose"></span>Platíte za ně</td><td><span class="dot-win"></span>Neexistují</td></tr>
+        <tr><td>AI a inovace</td><td><span class="dot-lose"></span>Tempo vendora</td><td><span class="dot-win"></span>Vaše tempo</td></tr>
+        <tr><td>Vlastnictví IP</td><td><span class="dot-lose"></span>Vendor</td><td><span class="dot-win"></span>Vy</td></tr>
+        <tr><td>Modularita</td><td><span class="dot-lose"></span>Vše nebo nic</td><td><span class="dot-win"></span>Postupný rozvoj</td></tr>
+        <tr><td>Bezpečnostní riziko</td><td><span class="dot-lose"></span>Závislost na 3. straně</td><td><span class="dot-win"></span>Pod vaší kontrolou</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<div class="cta-section">
+  <div class="cta-box">
+    <div>
+      <div class="cta-tag">Další krok</div>
+      <h3 class="cta-title">Detailní analýza<br><em>v tiskovém briefu.</em></h3>
+      <p class="cta-body">Tato stránka shrnuje klíčové argumenty. Kompletní rozpracování všech 10 bodů včetně TCO analýzy a časového rámce najdete v tištěné verzi dokumentu.</p>
+      <a href="index.html" class="cta-back">Zpět na Paper-less brief</a>
+    </div>
+    <div class="cta-right">
+      <div class="cta-point">MVP bez externích integrací: odhadovaný časový rámec 3&ndash;5 týdnů intenzivní spolupráce</div>
+      <div class="cta-point">Kompletní řešení nahrazující INOVIO: 4&ndash;8 měsíců postupného vývoje</div>
+      <div class="cta-point">Každých 14 dní funkční přírůstky k otestování a zpětné vazbě</div>
+      <div class="cta-point">Plně pod vaší kontrolou &mdash; žádná závislost na externím dodavateli</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-brand">Paper-less. &mdash; Build vs. Buy</div>
+  <div class="footer-meta">
+    Strategická analýza &middot; Březen 2026<br>
+    Zpracoval: Tom Alex
+  </div>
+</footer>
+</div><!-- /canvas -->
+
+<script>
+/* ─ Scroll animations ─ */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in');
+    io.unobserve(e.target);
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+document.querySelectorAll('.battle').forEach(el => io.observe(el));
+
+/* ─ Floating nav ─ */
+const fnav = document.getElementById('fnav');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 300) fnav.classList.add('visible');
+  else fnav.classList.remove('visible');
+}, { passive: true });
+</script>
+</body>
+</html>

@@ -367,125 +367,64 @@ section:last-of-type { border-bottom: none; }
   color:#fff; margin-bottom:8px; line-height:1.3;
 }
 .pill-body { font-size:12px; color:var(--muted); line-height:1.6; }
-/* ─── INOVIO vs CUSTOM APP ─── */
-.vs-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  margin-bottom: 56px;
+/* ─── FLOATING NAV ─── */
+.fnav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(12,14,17,.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transform: translateY(-100%);
+  transition: transform .35s ease;
 }
-.vs-card {
-  background: var(--surface);
-  padding: 36px 32px;
-  position: relative;
-  overflow: hidden;
-  opacity: 0; transform: translateY(14px);
-  transition: opacity .45s, transform .45s, background .2s;
-}
-.vs-card.in { opacity: 1; transform: none; }
-.vs-card:hover { background: #181c22; }
-.vs-num {
-  display: inline-flex;
+.fnav.visible { transform: none; }
+.fnav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 48px;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: var(--gold-d);
-  color: var(--gold);
+  height: 52px;
+}
+.fnav-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dim);
+  text-decoration: none;
+  transition: color .2s;
+}
+.fnav-brand:hover { color: #fff; }
+.fnav-links { display: flex; gap: 28px; align-items: center; }
+.fnav-link {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 11px;
-  font-weight: 500;
-  margin-bottom: 16px;
-}
-.vs-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 10px;
-  line-height: 1.25;
-}
-.vs-body {
-  font-size: 13px;
-  color: var(--dim);
-  line-height: 1.7;
-}
-.vs-body strong { color: var(--text); font-weight: 400; }
-.vs-highlight {
-  color: var(--gold);
-  font-weight: 500;
-}
-/* comparison table */
-.cmp-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid var(--border);
-}
-.cmp-table th {
-  background: var(--surface);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  letter-spacing: .12em;
+  letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--muted);
-  padding: 14px 20px;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-.cmp-table th:nth-child(2) { text-align: center; color: var(--red); }
-.cmp-table th:nth-child(3) { text-align: center; color: var(--green); }
-.cmp-table td {
-  padding: 13px 20px;
-  font-size: 13px;
-  color: var(--dim);
-  border-bottom: 1px solid var(--border);
-}
-.cmp-table tr:last-child td { border-bottom: none; }
-.cmp-table td:first-child {
-  font-weight: 500;
-  color: var(--text);
-  font-size: 13px;
-}
-.cmp-table td:nth-child(2) { text-align: center; color: var(--dim); }
-.cmp-table td:nth-child(3) { text-align: center; color: var(--green); font-weight: 500; }
-.cmp-table tbody tr {
-  transition: background .15s;
-}
-.cmp-table tbody tr:hover { background: rgba(201,168,76,.04); }
-/* AI sub-list inside vs-card */
-.vs-list {
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-}
-.vs-list li {
-  font-size: 12.5px;
-  color: var(--dim);
-  padding: 3px 0 3px 18px;
+  text-decoration: none;
+  padding: 6px 0;
   position: relative;
-  line-height: 1.5;
+  transition: color .2s;
 }
-.vs-list li::before {
-  content: '→';
+.fnav-link:hover { color: var(--gold); }
+.fnav-link::after {
+  content: '';
   position: absolute;
-  left: 0;
-  color: var(--gold);
-  font-weight: 500;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transition: transform .25s;
 }
-/* 4K */
+.fnav-link:hover::after { transform: scaleX(1); }
 @media (min-width: 2560px) {
-  .vs-card { padding: 48px 44px; }
-  .vs-num { width: 38px; height: 38px; font-size: 14px; }
-  .vs-title { font-size: 22px; }
-  .vs-body { font-size: 17px; }
-  .vs-list li { font-size: 16px; }
-  .cmp-table th { font-size: 13px; padding: 18px 28px; }
-  .cmp-table td { font-size: 17px; padding: 18px 28px; }
-}
-@media (max-width: 980px) {
-  .vs-grid { grid-template-columns: 1fr; }
+  .fnav-inner { max-width: 3200px; padding: 0 96px; height: 68px; }
+  .fnav-brand { font-size: 18px; }
+  .fnav-link { font-size: 14px; }
 }
 /* ─── DOCS ─── */
 .docs {
@@ -760,6 +699,15 @@ footer {
 </style>
 </head>
 <body>
+<!-- ═══ FLOATING NAV ═══ -->
+<nav class="fnav" id="fnav">
+  <div class="fnav-inner">
+    <a href="index.html" class="fnav-brand">Paper-less.</a>
+    <div class="fnav-links">
+      <a href="ownapp.html" class="fnav-link">Vlastní aplikace vs. INOVIO</a>
+    </div>
+  </div>
+</nav>
 <div class="canvas">
 <!-- ═══ HEADER / HERO ═══ -->
 <header>
@@ -878,93 +826,6 @@ footer {
     <div class="pillar"><span class="pill-icon">📊</span><div class="pill-title">Měření výsledků</div><p class="pill-body">KPI baseline před projektem. Pokles tisku, úspora prostoru, adopce DMS. ROI report.</p></div>
   </div>
 </section>
-<!-- ═══ CUSTOM APP vs INOVIO ═══ -->
-<section>
-  <div class="sec-head">
-    <div class="sec-tag">Build vs. Buy</div>
-    <h2 class="sec-title">Vlastní aplikace<br><em>vs. INOVIO.</em></h2>
-  </div>
-  <div class="vs-grid">
-    <div class="vs-card">
-      <div class="vs-num">1</div>
-      <div class="vs-title">Platíte jen za to, co skutečně používáte</div>
-      <p class="vs-body">INOVIO je krabicové řešení s desítkami modulů — platíte licenci za celek, i když využíváte zlomek funkcí. Vlastní aplikace obsahuje <span class="vs-highlight">přesně to, co potřebujete</span> — nic víc, nic míň.</p>
-    </div>
-    <div class="vs-card">
-      <div class="vs-num">2</div>
-      <div class="vs-title">Celkové náklady vlastnictví klesají v čase</div>
-      <p class="vs-body">U INOVIO platíte <strong>opakující se licenční poplatky navždy</strong> — s růstem uživatelů rostou náklady. U vlastní aplikace jsou hlavní náklady jednorázové. <span class="vs-highlight">Čím déle provozujete, tím více šetříte.</span></p>
-    </div>
-    <div class="vs-card">
-      <div class="vs-num">3</div>
-      <div class="vs-title">Absolutní flexibilita v customizaci</div>
-      <p class="vs-body">Nestandardní schvalovací řetězec? Specifický report? Unikátní workflow? U INOVIO čekáte na vendora, nebo to prostě nejde. U vlastní aplikace implementujete <span class="vs-highlight">přesně to, co firma potřebuje.</span></p>
-    </div>
-    <div class="vs-card">
-      <div class="vs-num">4</div>
-      <div class="vs-title">Rychlost nasazování změn</div>
-      <p class="vs-body">INOVIO: požadavek → prioritizace vendorem → čekání na release. <strong>Typicky týdny až měsíce.</strong> Vlastní aplikace: zadání → vývoj → nasazení. <span class="vs-highlight">Typicky dny.</span></p>
-    </div>
-    <div class="vs-card">
-      <div class="vs-num">5</div>
-      <div class="vs-title">Plná kontrola nad daty a bezpečností</div>
-      <p class="vs-body">S INOVIO svěřujete citlivá účetní data třetí straně. U vlastní aplikace <span class="vs-highlight">vy rozhodujete</span>, kde data leží, kdo k nim má přístup a jak jsou šifrována. Klíčové pro GDPR.</p>
-    </div>
-    <div class="vs-card">
-      <div class="vs-num">6</div>
-      <div class="vs-title">Žádný vendor lock-in</div>
-      <p class="vs-body">Zdraží licence? Změní podmínky? Ukončí produkt? Zkrachuje? Vlastní aplikace = <span class="vs-highlight">váš kód, vaše data, vaše nezávislost.</span> Žádná závislost na cizím životním cyklu.</p>
-    </div>
-    <div class="vs-card">
-      <div class="vs-num">7</div>
-      <div class="vs-title">Modularita a postupný rozvoj</div>
-      <p class="vs-body">Místo big-bang implementace stavíte postupně. <span class="vs-highlight">Každý modul přináší hodnotu okamžitě</span> — bez nutnosti kupovat celý systém najednou. Prioritizujete podle aktuálních potřeb.</p>
-    </div>
-    <div class="vs-card">
-      <div class="vs-num">8</div>
-      <div class="vs-title">Konkurenční výhoda a diferenciace</div>
-      <p class="vs-body">INOVIO používají stovky firem se stejnými omezeními. Vlastní aplikace umožní <span class="vs-highlight">digitalizovat procesy způsobem unikátním pro vaši firmu</span> — to konkurence nereplikuje.</p>
-    </div>
-    <div class="vs-card">
-      <div class="vs-num">9</div>
-      <div class="vs-title">Integrace s AI a budoucí technologie</div>
-      <p class="vs-body">U vlastní aplikace můžete <span class="vs-highlight">okamžitě integrovat nejnovější AI</span> pro:</p>
-      <ul class="vs-list">
-        <li>Inteligentní kategorizaci a vytěžování dokladů</li>
-        <li>Predikci cashflow a automatické párování plateb</li>
-        <li>Detekci anomálií a podvodů</li>
-        <li>Přirozený jazyk pro dotazy nad daty</li>
-      </ul>
-    </div>
-    <div class="vs-card">
-      <div class="vs-num">10</div>
-      <div class="vs-title">Vlastnictví know-how a IP</div>
-      <p class="vs-body">S INOVIO je know-how u vendora. Odejdete = začínáte od nuly. Vlastní aplikace znamená, že <span class="vs-highlight">firma vlastní intelektuální vlastnictví</span> a buduje interní kompetence s reálnou hodnotou.</p>
-    </div>
-  </div>
-  <!-- Comparison table -->
-  <table class="cmp-table">
-    <thead>
-      <tr>
-        <th>Kritérium</th>
-        <th>INOVIO</th>
-        <th>Vlastní aplikace</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>Náklady v čase</td><td>Rostoucí</td><td>Klesající</td></tr>
-      <tr><td>Customizace</td><td>Omezená vendorem</td><td>Neomezená</td></tr>
-      <tr><td>Rychlost změn</td><td>Týdny – měsíce</td><td>Dny</td></tr>
-      <tr><td>Vendor lock-in</td><td>Ano</td><td>Ne</td></tr>
-      <tr><td>Kontrola nad daty</td><td>Částečná</td><td>Plná</td></tr>
-      <tr><td>Nevyužité funkce</td><td>Platíte za ně</td><td>Neexistují</td></tr>
-      <tr><td>AI a inovace</td><td>Tempo vendora</td><td>Vaše tempo</td></tr>
-      <tr><td>Vlastnictví IP</td><td>Vendor</td><td>Vy</td></tr>
-      <tr><td>Modularita</td><td>Vše nebo nic</td><td>Postupný rozvoj</td></tr>
-      <tr><td>Bezpečnostní riziko</td><td>Závislost na 3. straně</td><td>Pod vaší kontrolou</td></tr>
-    </tbody>
-  </table>
-</section>
 <!-- ═══ DOCS ═══ -->
 <section>
   <div class="sec-head">
@@ -1073,6 +934,15 @@ const io = new IntersectionObserver((entries) => {
 document.querySelectorAll(
   '.why-card,.pillar,.doc,.risk,.step,.tl,.princ,.phase-item'
 ).forEach(el => io.observe(el));
+/* ─ Floating nav show/hide ─ */
+const fnav = document.getElementById('fnav');
+let lastY = 0;
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  if (y > 300) fnav.classList.add('visible');
+  else fnav.classList.remove('visible');
+  lastY = y;
+}, { passive: true });
 </script>
 </body>
 </html>
