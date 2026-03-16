@@ -677,6 +677,110 @@ footer {
   .footer-brand { font-size: 44px; }
   .footer-meta { font-size: 28px; line-height: 1.7; }
 }
+/* ─── Smart TV (no hover/mouse, viewport ~1920px) — optimized for 2m viewing on 48-55″ ─── */
+@media (hover: none) and (min-width: 1200px) and (max-width: 2559px) {
+  html { font-size: 220%; }
+  :root { --text: #f4f6fa; --dim: #c8cdd6; --muted: #98a0ae; }
+  body { font-weight: 400; letter-spacing: .01em; }
+  .canvas { max-width: 1800px; padding: 0 64px 120px; }
+  .fnav-inner { max-width: 1800px; padding: 0 64px; height: 72px; }
+  .fnav-brand { font-size: 20px; }
+  .fnav-link { font-size: 15px; letter-spacing: .12em; }
+  .fnav-links { gap: 36px; }
+  .hero { padding: 140px 64px 100px; }
+  .hero-kicker { font-size: 16px; letter-spacing: .2em; margin-bottom: 48px; }
+  .hero-kicker::before, .hero-kicker::after { width: 48px; }
+  .hero-claim { font-size: clamp(56px, 5vw, 96px); margin-bottom: 36px; }
+  .hero-claim em { font-size: .68em; margin-top: 10px; }
+  .hero-sub { font-size: 22px; max-width: 640px; line-height: 1.8; margin-bottom: 64px; }
+  .hero-vs { gap: 56px; }
+  .hero-vs-label { font-size: 14px; letter-spacing: .16em; margin-bottom: 8px; }
+  .hero-vs-name { font-size: 28px; }
+  .hero-vs-divider::after { font-size: 11px; }
+  section { padding: 100px 0; }
+  .sec-head { grid-template-columns: 280px 1fr; gap: 72px; margin-bottom: 72px; }
+  .sec-tag { font-size: 16px; letter-spacing: .16em; }
+  .sec-tag::before { width: 36px; }
+  .sec-title { font-size: clamp(36px, 3.2vw, 56px); }
+  .battle-header { gap: 20px; margin-bottom: 26px; }
+  .battle-num { font-size: 56px; }
+  .battle-claim { font-size: clamp(26px, 2.4vw, 44px); }
+  .battle-side { padding: 44px 48px; }
+  .battle-label { font-size: 15px; letter-spacing: .14em; margin-bottom: 18px; }
+  .battle-text { font-size: 20px; line-height: 1.75; }
+  .battle-verdict { font-size: 14px; padding: 5px 14px; margin-top: 18px; }
+  .battle-split { margin-bottom: 56px; }
+  .score-wrap { border-width: 2px; }
+  .score-table th { font-size: 15px; padding: 20px 36px; }
+  .score-table td { font-size: 20px; padding: 18px 36px; }
+  .dot-lose, .dot-win { width: 10px; height: 10px; margin-right: 10px; }
+  .cta-section { padding: 100px 0 56px; }
+  .cta-box { padding: 64px 60px; gap: 64px; }
+  .cta-tag { font-size: 14px; margin-bottom: 20px; }
+  .cta-title { font-size: 36px; margin-bottom: 16px; }
+  .cta-body { font-size: 20px; }
+  .cta-point { font-size: 19px; gap: 16px; }
+  .cta-point::before { font-size: 11px; margin-top: 6px; }
+  .cta-right { gap: 20px; }
+  .cta-back { font-size: 15px; margin-top: 28px; gap: 10px; }
+  .cta-back::before { font-size: 18px; }
+  footer { padding: 56px 0 44px; }
+  .footer-brand { font-size: 22px; }
+  .footer-meta { font-size: 15px; }
+}
+/* ─── Smart TV at 4K viewport (hover: none, 3840px) — 2m viewing on 48-55″ ─── */
+@media (hover: none) and (min-width: 2560px) and (max-width: 4999px) {
+  html { font-size: 400% !important; }
+  :root { --text: #f6f8fc !important; --dim: #d0d6e0 !important; --muted: #a8b0be !important; }
+  body { font-weight: 400; letter-spacing: .01em; }
+  .canvas { max-width: 3600px; padding: 0 140px 220px; }
+  .fnav-inner { max-width: 3600px; padding: 0 140px; height: 108px; }
+  .fnav-brand { font-size: 32px; }
+  .fnav-link { font-size: 22px; letter-spacing: .12em; }
+  .fnav-links { gap: 52px; }
+  .hero { padding: 220px 120px 160px; }
+  .hero-kicker { font-size: 22px; letter-spacing: .22em; margin-bottom: 72px; }
+  .hero-kicker::before, .hero-kicker::after { width: 68px; height: 2px; }
+  .hero-claim { font-size: clamp(100px, 4.8vw, 200px); margin-bottom: 56px; line-height: .9; }
+  .hero-claim em { font-size: .66em; margin-top: 16px; }
+  .hero-sub { font-size: 36px; max-width: 960px; line-height: 1.8; margin-bottom: 92px; }
+  .hero-vs { gap: 88px; }
+  .hero-vs-label { font-size: 20px; letter-spacing: .18em; margin-bottom: 14px; }
+  .hero-vs-name { font-size: 44px; }
+  .hero-vs-divider::after { font-size: 16px; letter-spacing: .16em; }
+  section { padding: 180px 0; }
+  .sec-head { grid-template-columns: 460px 1fr; gap: 120px; margin-bottom: 120px; }
+  .sec-tag { font-size: 24px; letter-spacing: .18em; }
+  .sec-tag::before { width: 52px; height: 2px; }
+  .sec-title { font-size: clamp(68px, 3.5vw, 112px); }
+  .battle-header { grid-template-columns: 64px 1fr; gap: 32px; margin-bottom: 38px; }
+  .battle-num { font-size: 92px; }
+  .battle-claim { font-size: clamp(48px, 2.6vw, 76px); }
+  .battle-side { padding: 80px 88px; }
+  .battle-side.win::before { width: 5px; }
+  .battle-label { font-size: 22px; letter-spacing: .16em; margin-bottom: 28px; }
+  .battle-text { font-size: 32px; line-height: 1.8; }
+  .battle-verdict { font-size: 20px; padding: 8px 18px; margin-top: 28px; border-radius: 3px; }
+  .battle-split { margin-bottom: 80px; gap: 2px; }
+  .score-wrap { border-width: 2px; }
+  .score-table th { font-size: 22px; padding: 32px 52px; border-bottom-width: 3px; }
+  .score-table td { font-size: 30px; padding: 28px 52px; }
+  .dot-lose, .dot-win { width: 16px; height: 16px; margin-right: 16px; }
+  .cta-section { padding: 180px 0 88px; }
+  .cta-box { padding: 100px 96px; gap: 100px; }
+  .cta-box::before { width: 5px; }
+  .cta-tag { font-size: 20px; letter-spacing: .18em; margin-bottom: 28px; }
+  .cta-title { font-size: 60px; margin-bottom: 24px; }
+  .cta-body { font-size: 32px; line-height: 1.75; }
+  .cta-point { font-size: 30px; gap: 22px; line-height: 1.6; }
+  .cta-point::before { font-size: 16px; margin-top: 10px; }
+  .cta-right { gap: 28px; }
+  .cta-back { font-size: 22px; margin-top: 40px; gap: 14px; }
+  .cta-back::before { font-size: 26px; }
+  footer { padding: 80px 0 60px; }
+  .footer-brand { font-size: 36px; }
+  .footer-meta { font-size: 22px; line-height: 1.7; }
+}
 @media print {
   * { animation:none !important; opacity:1 !important; transform:none !important; }
 }
